@@ -10,7 +10,7 @@ import { IOAppMapper } from "@layerzerolabs/oapp-evm/contracts/oapp/interfaces/I
 import { IOAppReducer } from "@layerzerolabs/oapp-evm/contracts/oapp/interfaces/IOAppReducer.sol";
 import { ReadCodecV1, EVMCallComputeV1, EVMCallRequestV1 } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/ReadCodecV1.sol";
 
-contract MyOAppRead is OAppRead, IOAppMapper, IOAppReducer {
+contract MyOAppRead is OAppRead, IOAppReducer {
     struct EvmReadRequest {
         uint16 appRequestLabel;
         uint32 targetEid;
@@ -156,10 +156,10 @@ contract MyOAppRead is OAppRead, IOAppMapper, IOAppReducer {
         return abi.encodePacked("_id:", identifier, "_blockNumber:", block.number);
     }
 
-    function lzMap(bytes calldata _request, bytes calldata _response) external pure returns (bytes memory) {
-        uint16 requestLabel = ReadCodecV1.decodeRequestV1AppRequestLabel(_request);
-        return abi.encodePacked(_response, "_mapped_requestLabel:", requestLabel);
-    }
+    // function lzMap(bytes calldata _request, bytes calldata _response) external pure returns (bytes memory) {
+    //     uint16 requestLabel = ReadCodecV1.decodeRequestV1AppRequestLabel(_request);
+    //     return abi.encodePacked(_response, "_mapped_requestLabel:", requestLabel);
+    // }
 
     function lzReduce(bytes calldata _cmd, bytes[] calldata _responses) external pure returns (bytes memory) {
         uint16 appLabel = ReadCodecV1.decodeCmdAppLabel(_cmd);

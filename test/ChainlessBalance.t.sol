@@ -37,6 +37,12 @@ contract ChainlessBalanceTest is TestHelperOz5 {
         }
         wireOApps(oapps);
 
+        // address[] memory sender = setupOApps(
+        //     type(ChainlessBalance).creationCode,
+        //     1,
+        //     ENDPOINT_COUNT
+        // );
+
         for (uint i = 0; i < ENDPOINT_COUNT; i++) {
             chainlessBalances.push(ChainlessBalance(payable(oapps[i])));
             destinationEids.push(uint16(i + 1));
@@ -85,9 +91,13 @@ contract ChainlessBalanceTest is TestHelperOz5 {
         );
         verifyAllPackets();
 
-        assertEq(123, chainlessBalances[0].balanceOf(TEST_ADDR));
-        assertEq(123, chainlessBalances[1].balanceOf(TEST_ADDR));
-        assertEq(123, chainlessBalances[2].balanceOf(TEST_ADDR));
+        for (uint256 i = 0; i < chainlessBalances.length; i++) {
+            assertEq(123, chainlessBalances[i].balanceOf(TEST_ADDR));
+
+            assertEq(123, chainlessBalances[i].chainBalanceOf(TEST_ADDR, 1));
+            assertEq(0, chainlessBalances[i].chainBalanceOf(TEST_ADDR, 2));
+            assertEq(0, chainlessBalances[i].chainBalanceOf(TEST_ADDR, 3));
+        }
 
         chainlessBalances[1].updateBalance{value: nativeFee}(
             TEST_ADDR,
@@ -96,20 +106,13 @@ contract ChainlessBalanceTest is TestHelperOz5 {
         );
         verifyAllPackets();
 
-        assertEq(100, chainlessBalances[0].balanceOf(TEST_ADDR));
-        assertEq(100, chainlessBalances[1].balanceOf(TEST_ADDR));
-        assertEq(100, chainlessBalances[2].balanceOf(TEST_ADDR));
+        for (uint256 i = 0; i < chainlessBalances.length; i++) {
+            assertEq(100, chainlessBalances[i].balanceOf(TEST_ADDR));
 
-        chainlessBalances[2].updateBalance{value: nativeFee}(
-            TEST_ADDR,
-            1337,
-            fees
-        );
-        verifyAllPackets();
-
-        assertEq(1437, chainlessBalances[0].balanceOf(TEST_ADDR));
-        assertEq(1437, chainlessBalances[1].balanceOf(TEST_ADDR));
-        assertEq(1437, chainlessBalances[2].balanceOf(TEST_ADDR));
+            assertEq(123, chainlessBalances[i].chainBalanceOf(TEST_ADDR, 1));
+            assertEq(-23, chainlessBalances[i].chainBalanceOf(TEST_ADDR, 2));
+            assertEq(0, chainlessBalances[i].chainBalanceOf(TEST_ADDR, 3));
+        }
     }
 
     function mintStuff(address TEST_ADDR) internal {
@@ -139,12 +142,52 @@ contract ChainlessBalanceTest is TestHelperOz5 {
         }
     }
 
-}
+    function test_ChainsWithBalance() public {
+        address TEST_ADDR = address(0x1337);
+        mintStuff(TEST_ADDR);
 
-/**
- * @notice Sets up mock OApp contracts for testing.
- * @param _oappCreationCode The bytecode for creating OApp contracts.
- * @param _startEid The starting endpoint ID for OApp setup.
- * @param _oappNum The number of OApps to set up.
- * @return oapps An array of addresses for the deployed OApps.
- */
+        ChainlessBalance cb = chainlessBalances[0];
+
+        assertEq(100, cb.chainBalances(1, TEST_ADDR));
+        assertEq(100, cb.chainBalances(2, TEST_ADDR));
+        assertEq(100, cb.chainBalances(3, TEST_ADDR));
+
+        {
+            uint32[4] memory eids = cb.getChainsWithBalance(TEST_ADDR, 200);
+            assertEq(2, eids[0]);
+            assertEq(3, eids[1]);
+            assertEq(0, eids[2]);
+        }
+
+        {
+            uint32[4] memory eids = cb.getChainsWithBalance(TEST_ADDR, 101);
+            assertEq(2, eids[0]);
+            assertEq(3, eids[1]);
+            assertEq(0, eids[2]);
+        }
+
+        {
+            uint32[4] memory eids = cb.getChainsWithBalance(TEST_ADDR, 100);
+            assertEq(2, eids[0]);
+            assertEq(0, eids[1]);
+        }
+
+        cb = chainlessBalances[1];
+
+        {
+            uint32[4] memory eids = cb.getChainsWithBalance(TEST_ADDR, 200);
+            assertEq(1, eids[0]);
+            assertEq(3, eids[1]);
+            assertEq(0, eids[2]);
+        }
+
+        cb = chainlessBalances[2];
+
+        {
+            uint32[4] memory eids = cb.getChainsWithBalance(TEST_ADDR, 200);
+            assertEq(1, eids[0]);
+            assertEq(2, eids[1]);
+            assertEq(0, eids[2]);
+        }
+    }
+}
