@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 // MyOApp imports
-import { MyOAppRead } from "../../contracts/MyOAppRead.sol";
+import { MyOAppRead } from "../contracts/MyOAppRead.sol";
 
 // OApp imports
 import { IOAppOptionsType3, EnforcedOptionParam } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OAppOptionsType3.sol";
