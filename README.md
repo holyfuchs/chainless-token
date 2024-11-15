@@ -1,6 +1,7 @@
 # ERC20 Unchained
 
 Unchaining ERC-20 tokens to enable use across all chains with standard function calls, regardless of where they currently reside. Behind the scenes, LayerZero's OFT handles the balance and movement, transferring tokens wherever needed without any extra steps for the user.
+<img src="logo.jpg" alt="logo" width="300"/>
 
 ## Try it out!
 
