@@ -4,14 +4,5 @@ src = 'contracts'
 out = 'out'
 test = 'test'
 cache_path = 'cache'
-libs = [
-    # We provide a set of useful contract utilities
-    # in the lib directory of @layerzerolabs/toolbox-foundry:
-    # 
-    # - forge-std
-    # - ds-test
-    # - solidity-bytes-utils
-    'node_modules/@layerzerolabs/toolbox-foundry/lib',
-    'node_modules',
-]
+libs = ["lib"]
 
