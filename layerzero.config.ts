@@ -3,6 +3,7 @@ import { EndpointId } from '@layerzerolabs/lz-definitions'
 import type { OAppReadOmniGraphHardhat, OmniPointHardhat } from '@layerzerolabs/toolbox-hardhat'
 const sepoliaContract: OmniPointHardhat = {
     eid: EndpointId.SEPOLIA_V2_TESTNET,
+    // address: 
     contractName: 'MyOAppRead',
 }
 
@@ -28,7 +29,8 @@ const config: OAppReadOmniGraphHardhat = {
             contract: amoyContract,
         },
     ],
-    connections: [],
+    connections: [
+    ],
 }
 
 export default config

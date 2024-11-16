@@ -52,19 +52,29 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
-        'sepolia-testnet': {
+        'sepolia': {
             eid: EndpointId.SEPOLIA_V2_TESTNET,
-            url: process.env.RPC_URL_SEPOLIA || 'https://rpc.sepolia.org/',
+            url: 'https://rpc.sepolia.org/',
             accounts,
         },
-        'avalanche-testnet': {
-            eid: EndpointId.AVALANCHE_V2_TESTNET,
-            url: process.env.RPC_URL_FUJI || 'https://rpc.ankr.com/avalanche_fuji',
+        'unichain': {
+            eid: EndpointId.UNICHAIN_V2_TESTNET,
+            url: 'https://sepolia.unichain.org',
             accounts,
         },
-        'amoy-testnet': {
+        'scroll': {
+            eid: EndpointId.SCROLL_V2_TESTNET,
+            url: 'https://sepolia-rpc.scroll.io',
+            accounts,
+        },
+        'polygon': {
             eid: EndpointId.AMOY_V2_TESTNET,
-            url: process.env.RPC_URL_AMOY || 'https://polygon-amoy-bor-rpc.publicnode.com',
+            url: 'https://polygon-amoy-bor-rpc.publicnode.com',
+            accounts,
+        },
+        'zircuit': {
+            eid: EndpointId.ZIRCUIT_V2_TESTNET,
+            url: 'https://zircuit1-testnet.p2pify.com',
             accounts,
         },
         hardhat: {

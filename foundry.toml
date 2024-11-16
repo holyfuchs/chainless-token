@@ -6,3 +6,17 @@ test = 'test'
 cache_path = 'cache'
 libs = ["lib"]
 
+[rpc_endpoints]
+unichain = "https://sepolia.unichain.org"
+scroll = "https://sepolia-rpc.scroll.io"
+polygon = "https://rpc-amoy.polygon.technology"
+zircuit = "https://zircuit1-testnet.p2pify.com"
+
+
+sepolia = "https://rpc2.sepolia.org"
+arbitrumSepolia = "https://sepolia-rollup.arbitrum.io/rpc"
+optimismSepolia = "https://sepolia.optimism.io"
+polygonZkEvm = "https://zkevm-rpc.com"
+polygonZkEvmTestnet = "https://rpc.public.zkevm-test.net"
+baseSepolia = "https://sepolia.base.org"
+pgnTestnet = "https://sepolia.publicgoods.network"

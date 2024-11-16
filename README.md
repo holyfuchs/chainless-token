@@ -9,7 +9,9 @@ Unchaining ERC-20 tokens to enable use across all chains with standard function 
     - [base]()
     - [sepolia]()
     - [scroll](https://scroll-sepolia.blockscout.com/)
-2. Use them on unichain
+    - [zircuit]()
+2. View balance on [unichain](https://unichain-sepolia.blockscout.com/) 
+3. Use them on unichain
     - [uniswap]()
 
 ## Description
@@ -70,3 +72,17 @@ sequenceDiagram
 
 To improve transaction speed the balance could go into the negative, if it is known that enough funds will be available on another chain.
 For example if total balance is 400, all 4 chains could spend 100 tokens instantly even if they go into the negative.
+
+
+## dev
+
+### chainlessbalance
+- deployed on: unichain at: 0x1d9F50D64511770695284D98E882Fb4B436191ad
+- deployed on: scroll at: 0x1d9F50D64511770695284D98E882Fb4B436191ad
+- deployed on: polygon at: 0x1d9F50D64511770695284D98E882Fb4B436191ad
+- deployed on: zircuit at: 0x1d9F50D64511770695284D98E882Fb4B436191ad
+
+### chainlessToken
+- 
+
+
