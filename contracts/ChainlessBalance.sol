@@ -6,7 +6,6 @@ import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { OApp, Origin, MessagingFee } from "@layerzerolabs/oapp-evm/contracts/oapp/OApp.sol";
-import { OAppRead } from "@layerzerolabs/oapp-evm/contracts/oapp/OAppRead.sol";
 import { OptionsBuilder } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OptionsBuilder.sol";
 
 contract ChainlessBalance is OApp {
@@ -19,10 +18,10 @@ contract ChainlessBalance is OApp {
     /// eid => account => balance
     mapping(uint32 => mapping(address => int256)) public chainBalances;
 
-    /// @dev needed to know who has permission to update balances
+    /// @dev token has permission to update balances
     address token;
 
-    /// @dev needed to know where to push updated balances
+    /// @dev where to push updated balances
     uint32[] destinationEids;
 
     event BalanceUpdateSent(address indexed account, int256 amount);
@@ -48,16 +47,30 @@ contract ChainlessBalance is OApp {
     }
 
     /**
-     * @notice Returns the value of tokens owned by `account`.
+     * @notice Gets the value of tokens owned by `account`.
+     * @param account The account for whom to check
+     * @return value of tokens owned across all chains
      */
     function balanceOf(address account) public view returns (uint256) {
         return uint256(balances[account]);
     }
 
+    /**
+     * @notice Gets the value of tokens owned by `account` on an eid.
+     * @param account The account for whom to check
+     * @param eid The eid on which to check
+     * @return value of tokens owned on that specific chain
+     */
     function chainBalanceOf(address account, uint32 eid) public view returns (int256) {
         return int256(chainBalances[eid][account]);
     }
 
+    /**
+     * @notice Called whenever the balance changes, will broadcast a message to all other chains
+     * @param account The account for whom to check
+     * @param amount The amount of tokens
+     * @param fees The fees requested by quote
+     */
     function updateBalance(
         address account,
         int256 amount,
@@ -84,8 +97,10 @@ contract ChainlessBalance is OApp {
     }
 
     /**
-     * @notice Returns an array chains who have together >= missingBalance tokens.
-     * last chain is source chain
+     * @notice Gets eids where sum(chainBalanceOf) >= missingBalance tokens.
+     * @param account the account for whom to get the balance
+     * @param missingBalance the missing balance (usually balance - tokens already owned on src chain)
+     * @return eids array of eids
      * @dev very unoptimised can handle 3 other chains maximum
      */
     function getChainsWithBalance(address account, int256 missingBalance) public view returns (uint32[4] memory) {
@@ -127,6 +142,13 @@ contract ChainlessBalance is OApp {
         emit BalanceUpdateRecieve(account, eid, amount);
     }
 
+    /**
+     * @notice Quote for the updatebalance. Fees have to be summed up to get the native value needed to be sent.
+     * @param account The account (probably doesn't matter for the quote)
+     * @param amount The amount of tokens (probably doesn't matter for the quote)
+     * @param payInLzToken bool if fees should be paid in lz tokens
+     * @return fees array of fees
+     */
     function quote(address account, int256 amount, bool payInLzToken) external view returns (MessagingFee[] memory) {
         bytes memory payload = abi.encode(account, amount);
         bytes memory options = OptionsBuilder.newOptions().addExecutorLzReceiveOption(80000, 0); // 50k to low
@@ -138,6 +160,9 @@ contract ChainlessBalance is OApp {
         return fees;
     }
 
+    /**
+     * @notice Not quite sure why its needed but otherwise sending reverts
+     */
     function _payNative(uint256 _nativeFee) internal override returns (uint256 nativeFee) {
         if (msg.value < _nativeFee) revert NotEnoughNative(msg.value);
         return _nativeFee;

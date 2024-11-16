@@ -10,12 +10,8 @@ struct ApproveData{
 }
 
 library ChainlessTokenMessageCodec {
-    // Offset constants for encoding and decoding OFT messages
     uint32 private constant OWNER_OFFSET = 4 * 32;
     uint32 private constant MISSING_VALUE_OFFSET = 7 * 32;
-    // uint8 private constant SEND_TO_OFFSET = 32;
-    // uint8 private constant SEND_TO_OFFSET = 32;
-    // uint8 private constant SEND_AMOUNT_SD_OFFSET = 40;
 
     function encodeMessage(
         ApproveData memory _approve,
