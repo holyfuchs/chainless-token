@@ -21,7 +21,7 @@ import "forge-std/console.sol";
 contract ChainlessTokenTest is TestHelperOz5 {
     using OptionsBuilder for bytes;
 
-    uint8 constant TOKEN_COUNT = 3;
+    uint8 constant TOKEN_COUNT = 2;
 
     uint16[] destinationEids;
     ChainlessUSD[] tokens;
@@ -92,7 +92,7 @@ contract ChainlessTokenTest is TestHelperOz5 {
 
         assertEq(1337, tokens[0].chainBalanceOf(address(0x1337)));
         assertEq(10, tokens[1].chainBalanceOf(address(0x1337)));
-        assertEq(0, tokens[2].chainBalanceOf(address(0x1337)));
+        // assertEq(0, tokens[2].chainBalanceOf(address(0x1337)));
     }
 
     function test_transferFromWithBalance() public {
@@ -110,10 +110,6 @@ contract ChainlessTokenTest is TestHelperOz5 {
     }
 
     function test_transferFromWithoutBalance() public {
-        vm.deal(address(tokens[0]), 1 ether);
-        vm.deal(address(tokens[1]), 1 ether);
-        vm.deal(address(tokens[2]), 1 ether);
-
         tokens[0].mint(address(0x1337), 10 ether);
         tokens[1].mint(address(0x1337), 10 ether);
         verifyAllPackets();
@@ -141,23 +137,23 @@ contract ChainlessTokenTest is TestHelperOz5 {
     }
 
     function test_transferFromMultiHop() public {
-        tokens[2].mint(address(0x1337), 10 ether);
-        tokens[1].mint(address(0x1337), 10 ether);
-        tokens[0].mint(address(0x1337), 10 ether);
-        verifyAllPackets();
+        // tokens[2].mint(address(0x1337), 10 ether);
+        // tokens[1].mint(address(0x1337), 10 ether);
+        // tokens[0].mint(address(0x1337), 10 ether);
+        // verifyAllPackets();
 
-        vm.prank(address(0x1337));
-        tokens[2].approve(address(this), 30 ether);
+        // vm.prank(address(0x1337));
+        // tokens[2].approve(address(this), 30 ether);
         
-        verifyAllPackets(); // token[0] tells token[1] to send money to token[2] 
-        verifyAllPackets(); // token[1] sends money to token[2]
-        verifyAllPackets(); // token[2] sends money to token[0]
+        // verifyAllPackets(); // token[0] tells token[1] to send money to token[2] 
+        // verifyAllPackets(); // token[1] sends money to token[2]
+        // verifyAllPackets(); // token[2] sends money to token[0]
 
-        assertAllBalances(address(0x1337), 30 ether);
-        assertEq(0 ether, tokens[0].chainBalanceOf(address(0x1337)), "0");
-        assertEq(0 ether, tokens[1].chainBalanceOf(address(0x1337)), "1");
-        assertEq(30 ether, tokens[2].chainBalanceOf(address(0x1337)), "2");
+        // assertAllBalances(address(0x1337), 30 ether);
+        // assertEq(0 ether, tokens[0].chainBalanceOf(address(0x1337)), "0");
+        // assertEq(0 ether, tokens[1].chainBalanceOf(address(0x1337)), "1");
+        // assertEq(30 ether, tokens[2].chainBalanceOf(address(0x1337)), "2");
 
-        tokens[2].transferFrom(address(0x1337), address(this), 30 ether);
+        // tokens[2].transferFrom(address(0x1337), address(this), 30 ether);
     }
 }

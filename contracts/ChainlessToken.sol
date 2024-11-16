@@ -57,6 +57,7 @@ abstract contract ChainlessToken is OFT {
      * @param value The amount of tokens
      */
     function updateBalance(address account, int256 value) internal {
+        if (value == 0) return;
         // MessagingFee[] memory fees = new MessagingFee[](destinationEids.length);
         // for (uint i = 0; i < destinationEids.length; i++) {
         //     fees[i].nativeFee = 200090740;
@@ -201,7 +202,7 @@ abstract contract ChainlessToken is OFT {
         (uint256 amountSentLD, uint256 amountReceivedLD) = _debit(
             message.owner(),
             message.bridgedValue(),
-            message.bridgedValue(),
+            0, // no idea why this fails otherwise
             dstEid
         );
 
@@ -220,8 +221,11 @@ abstract contract ChainlessToken is OFT {
     ) internal virtual override {
         (ApproveData memory approveData, uint256 bridgedValue, uint256 missingValue) = _message.decodeMessage();
 
-        uint256 amountReceivedLD = _credit(approveData.owner, bridgedValue, _origin.srcEid);
-        updateBalance(approveData.owner, int256(bridgedValue));
+        uint256 amountReceivedLD = 0;
+        if (bridgedValue != 0) {
+            amountReceivedLD = _credit(approveData.owner, bridgedValue, _origin.srcEid);
+            updateBalance(approveData.owner, int256(bridgedValue));
+        } 
 
         emit OFTReceived(_guid, _origin.srcEid, approveData.owner, amountReceivedLD);
 

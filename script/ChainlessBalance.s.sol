@@ -14,7 +14,7 @@ contract Deploy is Script {
     Endpoint[] public e;
 
     function setUp() public {
-        e.push(Endpoint("scroll", 0x6EDCE65403992e310A62460808c4b910D972f10f));
+        // e.push(Endpoint("scroll", 0x6EDCE65403992e310A62460808c4b910D972f10f));
         e.push(Endpoint("polygon", 0x6EDCE65403992e310A62460808c4b910D972f10f));
         e.push(Endpoint("zircuit", 0x6EDCE65403992e310A62460808c4b910D972f10f));
     }
@@ -41,9 +41,9 @@ contract Connect is Script {
 
     function setUp() public {
         // peers.push(Peer("sepolia", 40333, 0x7570adcf326406ef55C03e81d568EE1836E9A0e2));
-        peers.push(Peer("scroll", 40170, 0x114F9aFB1dce419E06d6709CfA87954378cf492e));
-        peers.push(Peer("polygon", 40267, 0x114F9aFB1dce419E06d6709CfA87954378cf492e));
-        peers.push(Peer("zircuit", 40275, 0x114F9aFB1dce419E06d6709CfA87954378cf492e));
+        // peers.push(Peer("scroll", 40170, 0x114F9aFB1dce419E06d6709CfA87954378cf492e));
+        peers.push(Peer("polygon", 40267, 0xd2dA8680FfDbe5136EbBb26928dF635D9cB79a0F));
+        peers.push(Peer("zircuit", 40275, 0xd2dA8680FfDbe5136EbBb26928dF635D9cB79a0F));
     }
 
     // function run() public {
@@ -63,7 +63,7 @@ contract Connect is Script {
             ChainlessBalance lz = ChainlessBalance(peers[i].peer);
 
             vm.startBroadcast();
-            lz.setToken(0xA8FF03a3aF16A07e505Fa7b5c1e3E2726D9787A3);
+            lz.setToken(0x753da027758f33f9dF35b8529Fa9b2e78664DfE5);
             vm.stopBroadcast();
 
             for (uint j = 0; j < peers.length; j++) {
