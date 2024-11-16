@@ -51,6 +51,7 @@ contract ChainlessTokenTest is TestHelperOz5 {
         wireOApps(ofts);
 
         for (uint256 i = 0; i < ofts.length; i++) {
+            vm.deal(address(tokens[i]), 1 ether);
             tokens[i].setChainlessBalance(chainlessBalances[i]);
             ChainlessBalance(chainlessBalances[i]).setToken(address(tokens[i]));
             for (uint256 j = 0; j < TOKEN_COUNT; j++) {
@@ -140,28 +141,13 @@ contract ChainlessTokenTest is TestHelperOz5 {
     }
 
     function test_transferFromMultiHop() public {
-        vm.deal(address(tokens[0]), 1 ether);
-        vm.deal(address(tokens[1]), 1 ether);
-        vm.deal(address(tokens[2]), 1 ether);
-
         tokens[2].mint(address(0x1337), 10 ether);
         tokens[1].mint(address(0x1337), 10 ether);
         tokens[0].mint(address(0x1337), 10 ether);
         verifyAllPackets();
 
-        // assertEq(10 ether, tokens[0].chainlessBalance().chainBalanceOf(address(0x1337), 1), "0");
-        // assertEq(10 ether, tokens[0].chainlessBalance().chainBalanceOf(address(0x1337), 2), "1");
-        // assertEq(10 ether, tokens[0].chainlessBalance().chainBalanceOf(address(0x1337), 3), "2");
-        // assertEq(10 ether, tokens[1].chainlessBalance().chainBalanceOf(address(0x1337), 1), "3");
-        // assertEq(10 ether, tokens[1].chainlessBalance().chainBalanceOf(address(0x1337), 2), "4");
-        // assertEq(10 ether, tokens[1].chainlessBalance().chainBalanceOf(address(0x1337), 3), "5");
-        // assertEq(10 ether, tokens[2].chainlessBalance().chainBalanceOf(address(0x1337), 1), "6");
-        // assertEq(10 ether, tokens[2].chainlessBalance().chainBalanceOf(address(0x1337), 2), "7");
-        // assertEq(10 ether, tokens[2].chainlessBalance().chainBalanceOf(address(0x1337), 3), "8");
-
-        vm.startPrank(address(0x1337));
+        vm.prank(address(0x1337));
         tokens[2].approve(address(this), 30 ether);
-        vm.stopPrank();
         
         verifyAllPackets(); // token[0] tells token[1] to send money to token[2] 
         verifyAllPackets(); // token[1] sends money to token[2]

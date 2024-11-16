@@ -168,7 +168,7 @@ abstract contract ChainlessToken is OFT {
         // console.log("     missing", missingValue);
         bytes memory message = ChainlessTokenMessageCodec.encodeMessage(
             approveData,
-            bridgeValue, // this doesn't bridge
+            bridgeValue, 
             missingValue
         );
         bytes memory options = OptionsBuilder.newOptions().addExecutorLzReceiveOption(2_000_000, 0); // yes my code sucks need this much gas
