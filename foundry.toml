@@ -7,13 +7,14 @@ cache_path = 'cache'
 libs = ["lib"]
 
 [rpc_endpoints]
-unichain = "https://sepolia.unichain.org"
-scroll = "https://sepolia-rpc.scroll.io"
+sepolia = "https://rpc2.sepolia.org"
+scroll = "https://scroll-sepolia.chainstacklabs.com"
+scroll2 = "https://sepolia-rpc.scroll.io"
 polygon = "https://rpc-amoy.polygon.technology"
 zircuit = "https://zircuit1-testnet.p2pify.com"
 
 
-sepolia = "https://rpc2.sepolia.org"
+unichain = "https://sepolia.unichain.org"
 arbitrumSepolia = "https://sepolia-rollup.arbitrum.io/rpc"
 optimismSepolia = "https://sepolia.optimism.io"
 polygonZkEvm = "https://zkevm-rpc.com"

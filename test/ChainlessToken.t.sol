@@ -55,7 +55,7 @@ contract ChainlessTokenTest is TestHelperOz5 {
             ChainlessBalance(chainlessBalances[i]).setToken(address(tokens[i]));
             for (uint256 j = 0; j < TOKEN_COUNT; j++) {
                 if (i != j) {
-                    tokens[i].addDestination(uint32(j + 1), address(tokens[j]));
+                    tokens[i].addDestination(uint32(j + 1));
                 }
             }
         }

@@ -77,12 +77,21 @@ For example if total balance is 400, all 4 chains could spend 100 tokens instant
 ## dev
 
 ### chainlessbalance
-- deployed on: unichain at: 0x1d9F50D64511770695284D98E882Fb4B436191ad
-- deployed on: scroll at: 0x1d9F50D64511770695284D98E882Fb4B436191ad
-- deployed on: polygon at: 0x1d9F50D64511770695284D98E882Fb4B436191ad
-- deployed on: zircuit at: 0x1d9F50D64511770695284D98E882Fb4B436191ad
+- unichain: [0x7570adcf326406ef55C03e81d568EE1836E9A0e2](https://unichain-sepolia.blockscout.com/address/0x7570adcf326406ef55C03e81d568EE1836E9A0e2)
+
+
+
+- scroll: [0x114F9aFB1dce419E06d6709CfA87954378cf492e](https://scroll-sepolia.blockscout.com/address/0x114F9aFB1dce419E06d6709CfA87954378cf492e)
+- polygon: [0x114F9aFB1dce419E06d6709CfA87954378cf492e](https://amoy.polygonscan.com/address/0x114F9aFB1dce419E06d6709CfA87954378cf492e)
+- zircuit: [0x114F9aFB1dce419E06d6709CfA87954378cf492e](https://explorer.testnet.zircuit.com/address/0x114F9aFB1dce419E06d6709CfA87954378cf492e)
 
 ### chainlessToken
-- 
+- unichain: [0xaC45aaab89741702a9A0083E28fbcfe28ffE7a96](https://unichain-sepolia.blockscout.com/address/0xaC45aaab89741702a9A0083E28fbcfe28ffE7a96)
+
+
+
+- scroll: [0xA8FF03a3aF16A07e505Fa7b5c1e3E2726D9787A3](https://scroll-sepolia.blockscout.com/address/0xA8FF03a3aF16A07e505Fa7b5c1e3E2726D9787A3)
+- polygon: [0xA8FF03a3aF16A07e505Fa7b5c1e3E2726D9787A3](https://amoy.polygonscan.com/address/0xA8FF03a3aF16A07e505Fa7b5c1e3E2726D9787A3)
+- zircuit: [0xA8FF03a3aF16A07e505Fa7b5c1e3E2726D9787A3](https://explorer.testnet.zircuit.com/address/0xA8FF03a3aF16A07e505Fa7b5c1e3E2726D9787A3)
 
 
