@@ -1,13 +1,6 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.22;
 
-import "forge-std/console.sol";
-import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
-
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {MessagingFee} from "@layerzerolabs/oapp-evm/contracts/oapp/OApp.sol";
-import {OFT} from "@layerzerolabs/oft-evm/contracts/OFT.sol";
-
 import {ChainlessToken} from "./ChainlessToken.sol";
 
 contract ChainlessUSD is ChainlessToken {

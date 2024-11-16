@@ -1,20 +1,14 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.22;
 
-import "forge-std/console.sol";
-import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+// import "forge-std/console.sol";
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Origin} from "@layerzerolabs/oapp-evm/contracts/oapp/OApp.sol";
 import {MessagingFee} from "@layerzerolabs/oapp-evm/contracts/oapp/OApp.sol";
-import {OFT, OFTCore} from "@layerzerolabs/oft-evm/contracts/OFT.sol";
+import {OFT} from "@layerzerolabs/oft-evm/contracts/OFT.sol";
 import {SendParam, OFTReceipt, MessagingReceipt} from "@layerzerolabs/oft-evm/contracts/interfaces/IOFT.sol";
 import {OptionsBuilder} from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OptionsBuilder.sol";
-import {IOAppMsgInspector} from "@layerzerolabs/oapp-evm/contracts/oapp/interfaces/IOAppMsgInspector.sol";
-// import {IOAppComposer} from "@layerzerolabs/oapp-evm/contracts/oapp/interfaces/IOAppComposer.sol";
-import {OFTMsgCodec} from "@layerzerolabs/lz-evm-oft/contracts/oft/libs/OFTMsgCodec.sol";
-import {OFTComposeMsgCodec} from "@layerzerolabs/oft-evm/contracts/libs/OFTComposeMsgCodec.sol";
-// import { IOFT, SendParam, OFTLimit, OFTReceipt, OFTFeeDetail, MessagingReceipt, MessagingFee } from "@layerzerolabs/oft-evm/contracts/interfaces/IOFT.sol";
 
 import {ChainlessBalance} from "./ChainlessBalance.sol";
 import {ChainlessTokenMessageCodec, ApproveData} from "./ChainlessTokenMessage.sol";
@@ -22,32 +16,9 @@ import {ChainlessTokenMessageCodec, ApproveData} from "./ChainlessTokenMessage.s
 abstract contract ChainlessToken is OFT {
     using OptionsBuilder for bytes;
     using ChainlessTokenMessageCodec for bytes;
-    // using OFTMsgCodec for bytes;
-    // using OFTMsgCodec for bytes32;
-
-    // MessagingReceipt lastMsgReceipt;
-    // OFTReceipt lastOftReceipt;
-
-    // function LastMsgReceipt() public view returns (MessagingReceipt memory) {
-    //     return lastMsgReceipt;
-    // }
-
-    // function LastOftReceipt() public view returns (OFTReceipt memory) {
-    //     return lastOftReceipt;
-    // }
-    // TODO
-    // this contract should hold ETH to quote and transact himself.
-
-    // uint256 public override totalSupply;
-    // string public override name;
-    // string public symbol;
-    // mapping(address account => uint256) private _balances;
-    // mapping(address account => mapping(address spender => uint256)) private _allowances;
 
     ChainlessBalance public chainlessBalance;
-    uint32 public chainlessBalanceServerEid;
     uint32[] destinationEids;
-    // mapping(uint32 => address) eidAddress;
 
     /**
      * @dev Constructor for the ChainlessToken contract.
@@ -72,24 +43,30 @@ abstract contract ChainlessToken is OFT {
 
     /**
      * @notice Adds destination Eids where the balance changes get sent.
+     * @dev this also gets added to chainlessBalance. 
+     *      Code could be changed to only have one array.
      */
     function addDestination(uint32 dstEid, address addr) external onlyOwner {
         chainlessBalance.addDestination(dstEid);
         destinationEids.push(dstEid);
-        // eidAddress[dstEid] = addr;
     }
 
+    /**
+     * @notice Called whenever the balance changes, will broadcast a message to all other chains
+     * @param account The account for whom to check
+     * @param value The amount of tokens
+     */
     function updateBalance(address account, int256 value) internal {
         // MessagingFee[] memory fees = new MessagingFee[](destinationEids.length);
         // for (uint i = 0; i < destinationEids.length; i++) {
-        //     fees[i].nativeFee = 110548;
+        //     fees[i].nativeFee = 200090740;
         // }
         MessagingFee[] memory fees = chainlessBalance.quote(
             account,
             value,
             false
         );
-        console.log(fees[0].nativeFee);
+        // console.log("updateBalance fee", fees[0].nativeFee);
         uint256 nativeFee;
         uint256 tokenFee;
         for (uint256 i = 0; i < fees.length; i++) {
@@ -103,23 +80,40 @@ abstract contract ChainlessToken is OFT {
         );
     }
 
+    /**
+     * @notice Gets the value of tokens owned by `account`.
+     * @param account The account for whom to check
+     * @return value of tokens owned across all chains
+     */
     function balanceOf(
         address account
     ) public view virtual override returns (uint256) {
         return chainlessBalance.balanceOf(account);
     }
 
+    /**
+     * @notice Gets the value of tokens owned by `account` on this chain.
+     * @param account The account for whom to check
+     * @return value of tokens owned on that specific chain
+     */
     function chainBalanceOf(address account) public view returns (uint256) {
         return super.balanceOf(account);
     }
 
+    /**
+     * @notice Mints tokens
+     * @param account The account for whom to mint
+     * @param value amount of tokens to mint
+     */
     function mint(address account, uint256 value) external onlyOwner {
         address owner = _msgSender();
         _mint(account, value);
         updateBalance(account, int256(value));
     }
 
-    // not sure if this works but who uses it anyways
+    /**
+     * @dev Not implemented! but shouldn't be hard
+     */
     function transfer(
         address to,
         uint256 value
@@ -130,15 +124,13 @@ abstract contract ChainlessToken is OFT {
         return true;
     }
 
-    // function allowance(
-    //     address owner,
-    //     address spender
-    // ) public view virtual override returns (uint256) {
-    //     // return 1;
-    //     return _allowance(owner, spender);
-    //     // return oft.allowance(owner, spender);
-    // }
-
+    /**
+     * @notice Approves tokens, if not enough tokens are on this chain,
+     *         it will initiate a bridge of tokens then approve when there
+     *         are enough
+     * @param spender The spender who is allowed to transfer the tokens
+     * @param value amount of tokens to approve
+     */
     function approve(
         address spender,
         uint256 value
@@ -153,7 +145,6 @@ abstract contract ChainlessToken is OFT {
                 owner,
                 int256(missingValue)
             );
-            console.log(eids[0], eids[1], eids[2], eids[3]);
             for (uint i = 0; i < 5; i++) {
                 if (i == 4) {
                     revert ("only 3 hops supported");
@@ -174,6 +165,13 @@ abstract contract ChainlessToken is OFT {
         return true;
     }
 
+    /**
+     * @notice Since the logic is in approve this can be used normally
+     *         but has to broadcast an update with updateBalance
+     * @param from The spender of the tokens
+     * @param to The reciever of the tokens
+     * @param value amount of tokens 
+     */
     function transferFrom(
         address from,
         address to,
@@ -191,7 +189,7 @@ abstract contract ChainlessToken is OFT {
         ApproveData memory approveData,
         uint256 bridgeValue,
         uint256 missingValue
-    ) public {
+    ) internal {
         // console.log("sending from", endpoint.eid());
         // console.log("          to", approveData.eids[0]);
         // console.log("       value", bridgeValue);
@@ -223,6 +221,10 @@ abstract contract ChainlessToken is OFT {
         updateBalance(approveData.owner, -int256(bridgeValue));
     }
 
+    /**
+     * @notice sends a message, needed as an external function so it can
+     *         be paid by this contract
+     */
     function lzSend(
         uint32 dstEid,
         bytes calldata message,
@@ -286,7 +288,6 @@ abstract contract ChainlessToken is OFT {
         require(endpoint.eid() == approveData.eids[0], "sanity check eid");
 
         if (approveData.eids[1] == 0) {
-            console.log("WIN!!!");
             _approve(approveData.owner, approveData.spender, approveData.value);   
         } else {
             for (uint i = 0; i < 3; i++) {
@@ -303,57 +304,4 @@ abstract contract ChainlessToken is OFT {
 
         
     }
-
-    // function addressToBytes32(address _addr) internal pure returns (bytes32) {
-    //     return bytes32(uint256(uint160(_addr)));
-    // }
-
-    // function send(
-    //     SendParam calldata _sendParam,
-    //     MessagingFee calldata _fee,
-    //     address _refundAddress,
-    //     address account
-    // )
-    //     public
-    //     payable
-    //     virtual
-    //     returns (
-    //         MessagingReceipt memory msgReceipt,
-    //         OFTReceipt memory oftReceipt
-    //     )
-    // {
-    //     require(msg.sender == address(this));
-    //     // @dev Applies the token transfers regarding this send() operation.
-    //     // - amountSentLD is the amount in local decimals that was ACTUALLY sent/debited from the sender.
-    //     // - amountReceivedLD is the amount in local decimals that will be received/credited to the recipient on the remote OFT instance.
-    //     (uint256 amountSentLD, uint256 amountReceivedLD) = _debit(
-    //         account,
-    //         _sendParam.amountLD,
-    //         _sendParam.minAmountLD,
-    //         _sendParam.dstEid
-    //     );
-    //     // @dev Builds the options and OFT message to quote in the endpoint.
-    //     (bytes memory message, bytes memory options) = _buildMsgAndOptions(
-    //         _sendParam,
-    //         amountReceivedLD
-    //     );
-    //     // @dev Sends the message to the LayerZero endpoint and returns the LayerZero msg receipt.
-    //     msgReceipt = _lzSend(
-    //         _sendParam.dstEid,
-    //         message,
-    //         options,
-    //         _fee,
-    //         _refundAddress
-    //     );
-    //     // @dev Formulate the OFT receipt.
-    //     oftReceipt = OFTReceipt(amountSentLD, amountReceivedLD);
-
-    //     emit OFTSent(
-    //         msgReceipt.guid,
-    //         _sendParam.dstEid,
-    //         account,
-    //         amountSentLD,
-    //         amountReceivedLD
-    //     );
-    // }
 }
